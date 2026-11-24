@@ -1,36 +1,85 @@
-# Active Directory Authentication & Group Policy Troubleshooting Lab
+# Active Directory Authentication & Account Lockout Troubleshooting Lab
 
-A hands-on Windows Server 2022 home lab documenting how to investigate and resolve a domain user's interactive sign-in failure by reviewing Active Directory account state, password policy, group membership, Group Policy, and Windows security events.
+A hands-on Windows Server 2022 home lab documenting two separate Active Directory troubleshooting scenarios involving authentication, Group Policy, account lockouts, and identity management.
 
-> **Lab environment:** Personal virtual lab using Parallels Desktop.  
-> **Domain:** `lab.local`  
-> **Domain controller:** `LAB-DC01`  
-> **Test user:** Michael Brown (`mbrown`)  
-> **Tools:** Active Directory PowerShell module, Group Policy Management, `gpresult`, `secedit`, Event Viewer / `Get-WinEvent`.
+## Lab Environment
 
-## Outcome
+- Domain: `lab.local`
+- Domain Controller: `LAB-DC01`
+- Client: `LAB-CLIENT01`
+- Platform: Virtualized Windows Server environment
+- Tools: Active Directory PowerShell, Group Policy Management, Event Viewer, `gpresult`, and `secedit`
 
-The test user ultimately signed in successfully to the Windows Server VM. The troubleshooting work included:
+---
 
-- Checking whether the account was enabled, locked out, or password-expired.
-- Reviewing the domain password policy and resetting the lab user's password.
-- Checking membership in `Domain Users` and `IT_Team`.
-- Reviewing the **Allow log on locally** and **Deny log on locally** user-right assignments.
-- Refreshing and inspecting Group Policy.
-- Verifying successful interactive sign-in.
+## Project Overview: Two Separate Scenarios
 
-This is a learning lab, not a production change record. The exact causal change should be described as a Group Policy/logon-rights troubleshooting sequence; do not claim that one isolated setting was proven to be the sole cause unless you reproduce and validate that finding.
+**Important:** This repository documents two different troubleshooting exercises. They involve different test accounts and must not be presented as one continuous incident.
 
-## Repository contents
+### Scenario 1: Interactive Authentication & Group Policy Troubleshooting
+
+**Test User:** Michael Brown (`mbrown`)
+
+**Problem:** The user experienced an interactive Windows sign-in failure.
+
+Investigation included:
+- Active Directory account status verification.
+- Password expiration and password policy review.
+- Group membership verification.
+- Allow Log on Locally policy inspection.
+- Deny Log on Locally policy inspection.
+- Group Policy refresh and review.
+- Interactive sign-in validation.
+
+**Outcome:** Successful interactive domain sign-in was documented.
+
+**Evidence:** 
+- `evidence/01-logon-rights-policy-review.jpeg`
+- `evidence/02-successful-domain-sign-in.jpeg`
+
+The available evidence documents the troubleshooting process and successful outcome. It does not independently establish one setting as the sole cause of the original failure.
+
+### Scenario 2: Active Directory Account Lockout & Help Desk Recovery
+
+**Test User:** Alex Johnson (`alex.johnson`)
+
+**Problem:** The domain account experienced repeated authentication failures and became locked out.
+
+Investigation included:
+- Domain password policy validation.
+- Account lockout threshold and duration review.
+- Security Event ID 4740 investigation.
+- Identification of the calling computer (`LAB-CLIENT01`).
+- Account recovery using `Unlock-ADAccount`.
+- Verification of account status and bad password count.
+- Successful authentication validation using Event ID 4624.
+
+**Outcome:** The account was unlocked, the bad password count was reset, and subsequent successful authentication was documented.
+
+**Important evidence limitations:**
+- Event ID 4740 confirms the account lockout.
+- Event ID 4624 documents successful authentication.
+- Do not claim Event ID 4625, 4771, or 4776 evidence unless the corresponding records are captured.
+- Do not claim successful domain GPO application where the screenshots do not establish it.
+
+See:
+- `evidence/README.md`
+- `evidence/EVIDENCE-INDEX.md`
+
+---
+
+## Repository Structure
 
 ```text
 active-directory-authentication-gpo-lab/
+│
 ├── README.md
 ├── LICENSE
-├── .gitignore
+│
 ├── docs/
 │   ├── troubleshooting-runbook.md
 │   └── findings-and-lessons.md
+│
 ├── scripts/
 │   ├── 01-audit-user.ps1
 │   ├── 02-reset-user-password.ps1
@@ -38,80 +87,42 @@ active-directory-authentication-gpo-lab/
 │   ├── 04-export-logon-rights.ps1
 │   ├── 05-refresh-and-report-gpo.ps1
 │   └── 06-review-failed-logons.ps1
+│
 └── evidence/
-    ├── 01-logon-rights-policy-review.jpeg
-    ├── 02-successful-domain-sign-in.jpeg
-    └── README.md
+    ├── README.md
+    ├── EVIDENCE-INDEX.md
+    └── screenshots and investigation evidence
 ```
 
-## Prerequisites
+## Technical Skills Demonstrated
 
-- Windows Server 2022 domain controller in a disposable lab.
-- Active Directory Domain Services installed and configured.
-- Active Directory PowerShell module available.
-- A lab user account such as `lab\mbrown`.
-- Administrative access to run the audit and policy commands.
-- A snapshot or backup before changing domain security policy.
-
-## Quick start
-
-Run PowerShell as an administrator on `LAB-DC01`.
-
-1. Review the account:
-
-   ```powershell
-   .\scripts\01-audit-user.ps1 -Identity mbrown
-   ```
-
-2. Review group membership:
-
-   ```powershell
-   .\scripts\03-check-group-membership.ps1 -Identity mbrown
-   ```
-
-3. Export and inspect effective user-right assignments:
-
-   ```powershell
-   .\scripts\04-export-logon-rights.ps1
-   ```
-
-4. Refresh policy and collect results:
-
-   ```powershell
-   .\scripts\05-refresh-and-report-gpo.ps1
-   ```
-
-5. If sign-in attempts failed, inspect recent Security event 4625 records:
-
-   ```powershell
-   .\scripts\06-review-failed-logons.ps1
-   ```
-
-6. Reset the password only if required:
-
-   ```powershell
-   .\scripts\02-reset-user-password.ps1 -Identity mbrown
-   ```
-
-Scripts are diagnostic helpers. Read each script before running it. The password reset script changes the selected account's password.
-
-## Important security note
-
-Domain controllers are highly sensitive systems. **Do not broadly grant interactive console logon to `Domain Users` on a production domain controller.** Keep DC interactive logon restricted to specifically authorized administrative roles. This lab uses a controlled test environment to learn how user-right assignments affect sign-in.
-
-Do not commit real passwords, recovery keys, production domain details, or screenshots containing secrets. The screenshots in this repository are from a personal lab and should be reviewed/redacted before public upload.
-
-## Skills demonstrated
-
-- Active Directory account administration
+- Active Directory administration
 - Identity and Access Management (IAM)
-- PowerShell administration and auditing
+- Windows Server 2022
+- PowerShell scripting
 - Group Policy troubleshooting
-- Windows user-right assignments
-- Password policy and account-state validation
+- Password and account-lockout policies
 - Windows Security event investigation
-- Authentication troubleshooting and technical documentation
+- Authentication troubleshooting
+- Help Desk incident documentation
+- Technical evidence collection
 
-## Evidence
+## Security Considerations
 
-See [`evidence/`](evidence/) for selected screenshots. The images document policy review and the successful sign-in state; they are supporting evidence, not a substitute for reproducible commands and written findings.
+This is a controlled personal lab, not a production environment.
+
+- Never broadly grant Domain Users interactive logon access to domain controllers.
+- Restrict domain controller access to authorized administrators.
+- Review deny and allow user-right assignments before changing policies.
+- Use VM snapshots before security-policy modifications.
+- Never commit passwords, recovery keys, or sensitive production information.
+
+## Project Conclusion
+
+This project demonstrates two distinct Active Directory support workflows.
+
+The first focuses on investigating interactive authentication and Group Policy issues involving Michael Brown.
+
+The second demonstrates account-lockout investigation, event correlation, account recovery, and successful authentication involving Alex Johnson.
+
+Together, these exercises demonstrate practical Windows administration, IAM, troubleshooting, and entry-level IT support skills.
