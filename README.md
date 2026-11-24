@@ -36,8 +36,7 @@ Investigation included:
 
 ## Primary Evidence — Michael Brown
 
-![Logon Rights Policy Review](evidence/01-logon-rights-policy-review.jpeg)
-
+![Logon Rights Policy Review](evidence/01-logon-rights-policy-review.png)
 *Figure 1. Review of Windows interactive logon rights.*
 
 ![Successful Domain Sign-In](evidence/02-successful-domain-sign-in.jpeg)
