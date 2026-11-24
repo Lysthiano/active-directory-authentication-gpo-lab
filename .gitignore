@@ -1,0 +1,15 @@
+# Windows system files
+Thumbs.db
+Desktop.ini
+
+# PowerShell temporary files
+*.log
+*.tmp
+
+# Local exports
+secpol-*.cfg
+gpresult-*.html
+
+# Editor files
+.vscode/
+.idea/
