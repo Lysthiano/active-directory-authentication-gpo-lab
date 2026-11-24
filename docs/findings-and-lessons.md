@@ -1,33 +1,84 @@
 # Findings and Lessons Learned
 
-## Lab scenario
+## Scenario 1 — Interactive Authentication and Group Policy Troubleshooting
 
-A test domain user, Michael Brown (`mbrown`), could not initially complete an interactive sign-in to the Windows Server virtual machine.
+**Test user:** Michael Brown (`mbrown`)  
+**Domain:** `lab.local`  
+**Domain controller:** `LAB-DC01`
 
-## Checks performed
+### Incident Summary
+
+A domain user, Michael Brown, initially experienced an interactive sign-in failure when attempting to access the Windows Server virtual machine.
+
+The investigation focused on determining whether the issue involved Active Directory account status, password requirements, group membership, or Windows interactive logon permissions.
+
+This investigation is the original authentication and Group Policy lab scenario. It is separate from the later Alex Johnson account-lockout recovery exercise documented in the repository's evidence folder.
+
+## Investigation and Findings
 
 | Area | Investigation | Recorded finding |
 |---|---|---|
-| Account status | `Get-ADUser` | Account enabled; not locked out in the later verification |
-| Password | Password-expiration check and reset workflow | Password expiration was identified earlier in the troubleshooting |
-| Group membership | `Get-ADPrincipalGroupMembership` | `Domain Users` and `IT_Team` |
-| Logon rights | Group Policy Management / `secedit` | Reviewed Allow log on locally and Deny log on locally |
-| Group Policy | `gpupdate` / `gpresult` | Refreshed and reviewed policy application |
-| Final test | VM console sign-in | Successful sign-in observed |
+| Account status | `Get-ADUser` | Account enabled and not locked out during later verification |
+| Password policy | `Get-ADDefaultDomainPasswordPolicy` | Password expiration was identified during troubleshooting |
+| Password recovery | Password reset workflow | Password reset was part of the troubleshooting process |
+| Group membership | `Get-ADPrincipalGroupMembership` | Membership included `Domain Users` and `IT_Team` |
+| Logon permissions | Group Policy Management | Reviewed Allow log on locally and Deny log on locally |
+| Security policy | `secedit` | Exported and reviewed effective user-right assignments |
+| Group Policy | `gpupdate` and `gpresult` | Policy refresh and results review performed |
+| Final validation | Windows VM console | Successful interactive sign-in documented |
 
-## What I learned
+## Troubleshooting Approach
 
-1. A sign-in failure should be investigated systematically rather than treated as a password-only problem.
-2. Active Directory account state, password policy, group membership, and user-right assignments are separate controls.
-3. Group Policy can define interactive logon rights on a domain controller.
-4. A deny user-right assignment overrides an allow assignment.
-5. `gpresult`, `secedit`, and Security event logs provide evidence to support troubleshooting.
-6. Final validation should be performed from the same sign-in path that originally failed.
+The investigation followed a structured troubleshooting process:
 
-## Evidence limitations
+1. Checked the Active Directory account's enabled and locked-out status.
+2. Reviewed password expiration and domain password policy.
+3. Verified the user's group memberships.
+4. Inspected interactive logon user-right assignments.
+5. Reviewed Group Policy configuration and results.
+6. Performed the required account and policy troubleshooting.
+7. Retested interactive sign-in.
 
-The screenshots document selected points in the lab. They do not establish every intermediate change or prove that a single setting was solely responsible for the initial failure. A repeatable follow-up test should record the exact GPO, its scope, the affected group, and the corresponding Security event data.
+## Outcome
 
-## Production lesson
+A successful interactive domain sign-in was documented following the troubleshooting sequence.
 
-Interactive logon to domain controllers should be tightly restricted. In a real organization, users should normally sign in to managed workstations, while domain controllers are administered only by authorized personnel using approved administrative access paths.
+The evidence supports the successful final state and selected investigation steps. However, the available screenshots do not independently establish one specific policy setting as the sole root cause.
+
+**Root cause status:** Not conclusively isolated.
+
+## Lessons Learned
+
+1. Authentication failures should be investigated systematically rather than automatically attributed to incorrect passwords.
+2. Active Directory account status, password policies, group membership, and user-right assignments are separate security controls.
+3. Group Policy can affect interactive sign-in permissions on Windows systems.
+4. Deny user-right assignments take precedence over corresponding allow assignments.
+5. PowerShell, `gpresult`, `secedit`, and Windows Security logs provide complementary troubleshooting information.
+6. Successful validation should use the same sign-in path that originally failed.
+7. Documentation should distinguish observed evidence from assumptions about root cause.
+
+## Evidence Limitations
+
+The screenshots document selected checkpoints in the investigation. They do not establish every intermediate change or prove that one specific configuration change independently resolved the original issue.
+
+A repeatable follow-up test should record:
+
+- The exact policy or account setting changed.
+- The GPO responsible for the effective setting.
+- The affected user or security group.
+- The corresponding Security event records.
+- The result of a controlled before-and-after sign-in test.
+
+## Production Security Considerations
+
+Domain controllers are highly sensitive systems.
+
+Interactive logon permissions should be restricted to authorized administrative roles. Broadly granting `Domain Users` interactive console access on a production domain controller is not an appropriate troubleshooting solution.
+
+A dedicated test GPO, controlled test accounts, and VM snapshots should be used when experimenting with security settings.
+
+---
+
+**Related documentation:** [Troubleshooting Runbook](troubleshooting-runbook.md)
+
+**Scenario distinction:** This document covers Michael Brown (`mbrown`). Alex Johnson (`alex.johnson`) is documented separately in the account-lockout evidence package.
