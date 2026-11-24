@@ -1,41 +1,72 @@
-# Active Directory Account Lockout Investigation & Help Desk Recovery
+# Active Directory Evidence Index
 
-Repository: https://github.com/Lysthiano/active-directory-account-lockout-lab
+This index documents the screenshots collected during the Alex Johnson (`alex.johnson`) account-lockout and help desk recovery investigation.
 
-This evidence package organizes the captured Windows Server 2022 / Windows client lab screenshots for the `lab.local` domain. The test account shown in the lab is `alex.johnson`; the domain controller is `LAB-DC01`, and the client is `LAB-CLIENT01`.
+**Domain:** `lab.local`  
+**Domain Controller:** `LAB-DC01`  
+**Client:** `LAB-CLIENT01`  
+**Test User:** `alex.johnson`
 
-## Evidence highlights
+> All screenshot paths below are relative to the repository root. The images are stored directly in `evidence/`, not in separate session subdirectories.
 
-- Domain password and account-lockout policy validation: minimum password length 12, password history 10, maximum password age 90 days, lockout threshold 5 attempts, lockout duration 15 minutes, and observation window 15 minutes.
-- Account lockout observed for `alex.johnson`, including Event ID **4740** and caller computer `LAB-CLIENT01`.
-- Account recovery performed with `Unlock-ADAccount`; subsequent checks show `LockedOut=False` and `badPwdCount=0`.
-- Successful logon evidence includes Event ID **4624**.
-- Client domain identity and secure-channel verification are included.
+## November 23, 2026 — Account Lockout Investigation
 
-## Folder guide
+| Evidence file | Presentation title | What it demonstrates |
+|---|---|---|
+| `evidence/01-client-sign-in-screen-before-domain-session.png` | Client Sign-In Screen | Initial client sign-in context |
+| `evidence/02-domain-controller-account-state-query.png` | Domain Controller Account State | Active Directory account investigation |
+| `evidence/03-account-lockout-state-and-bad-password-count.png` | Account Lockout State | LockedOut=True and badPwdCount=5 |
+| `evidence/04-account-lockout-event-4740-correlation.png` | Lockout Event Correlation | Account lockout investigation |
+| `evidence/05-client-password-change-prompt.png` | Password Change Prompt | Client password-change requirement |
+| `evidence/06-domain-controller-event-4740-details.png` | Event ID 4740 Details | Domain controller Security event review |
+| `evidence/07-client-domain-user-session-verification.png` | Domain User Session | Client domain identity and logon server |
+| `evidence/08-administrator-unlock-and-account-recovery.png` | Account Recovery | Unlock-ADAccount workflow |
+| `evidence/09-client-domain-session-after-recovery.png` | Client Session After Recovery | Client authentication after recovery |
+| `evidence/10-successful-network-logon-event-4624.png` | Successful Logon Event | Event ID 4624 |
+| `evidence/11-account-lockout-event-4740-caller-computer.png` | Lockout Caller Computer | Event ID 4740 identifying LAB-CLIENT01 |
+| `evidence/12-client-group-policy-and-domain-password-policy-check.png` | Policy Verification | Client Group Policy and password policy review |
+| `evidence/13-repeat-account-lockout-event-4740-review.png` | Repeat Lockout Event Review | Additional Event ID 4740 investigation |
+| `evidence/14-account-unlocked-and-bad-password-count-reset.png` | Recovery Verification | LockedOut=False and badPwdCount=0 |
+| `evidence/15-client-group-policy-results-review.png` | Group Policy Results | Client-side policy results |
+| `evidence/16-account-state-and-successful-logon-event-review.png` | Account and Logon Review | Account state and Event ID 4624 |
+| `evidence/17-client-domain-identity-and-secure-channel-check.png` | Secure Channel Verification | Client identity and secure-channel test |
+| `evidence/18-final-client-domain-session-verification.png` | Final Client Session | Final domain identity and logon server verification |
 
-- `screenshots/curated/` — six previously selected, presentation-ready screenshots.
-- `screenshots/2026-11-23-session/` — timestamped evidence from the November 23 lab session, arranged in investigation order.
-- `EVIDENCE-INDEX.md` — presentation titles and a short description for each November 23 capture.
+## November 24, 2026 — Additional Validation
 
-## Evidence gaps / accuracy notes
+| Evidence file | Presentation title | What it demonstrates |
+|---|---|---|
+| `evidence/20-domain-controller-account-state-and-successful-logon-review.jpg` | Domain Controller Final Review | Account enabled, unlocked, badPwdCount=0, and successful Event ID 4624 records |
 
-The supplied captures establish Events **4740** and **4624**. They do **not** currently establish a captured Event ID **4625** failed-logon record, nor do they prove Events 4771 or 4776. Add those screenshots only after collecting them from the appropriate Security logs. Some captures show Group Policy results with no domain GPO listed as applied; do not describe a domain GPO as successfully applied based on these screenshots.
+## Evidence Interpretation
 
-## Suggested README embeds
+The collected evidence supports the following conclusions:
 
-Use relative paths from the repository root, for example:
+1. The account experienced a lockout documented by Event ID 4740.
+2. The caller computer was identified as `LAB-CLIENT01`.
+3. Administrative account recovery was performed.
+4. The account was subsequently verified as unlocked.
+5. The bad password count was reset to zero.
+6. Successful authentication was documented through Event ID 4624.
+7. Client domain identity and secure-channel verification were performed.
 
-```markdown
-![Account lockout event 4740](screenshots/2026-11-23-session/11-account-lockout-event-4740-caller-computer.png)
-![Account recovery verification](screenshots/2026-11-23-session/14-account-unlocked-and-bad-password-count-reset.png)
-![Successful logon event 4624](screenshots/2026-11-23-session/10-successful-network-logon-event-4624.png)
-```
+## Evidence Limitations
 
+The available screenshots do not establish:
 
-## Additional evidence captured November 24, 2026
+- A captured Event ID 4625 failed-logon record.
+- Event ID 4771 Kerberos pre-authentication failure.
+- Event ID 4776 credential validation failure.
+- Successful application of a domain GPO where the captured results do not demonstrate it.
 
-- Client-side identity and domain controller secure-channel validation.
-- Domain-controller account recovery state (`LockedOut=False`, `badPwdCount=0`).
-- Recent successful authentication records (Event ID 4624).
+These should only be added when supporting evidence is collected.
 
+## Repository Organization
+
+All indexed screenshots are currently stored directly in:
+
+`evidence/`
+
+The original Michael Brown authentication and Group Policy screenshots are retained in the same directory but belong to Scenario 1, not this account-lockout investigation.
+
+The index should be updated whenever new evidence is added or existing evidence is renamed.
