@@ -33,12 +33,30 @@ Investigation included:
 
 **Outcome:** Successful interactive domain sign-in was documented.
 
-**Evidence:** 
-- `evidence/01-logon-rights-policy-review.jpeg`
-- `evidence/02-successful-domain-sign-in.jpeg`
+<CodeBlock language="markdown" editable>
+**Primary Evidence — Michael Brown**
 
-The available evidence documents the troubleshooting process and successful outcome. It does not independently establish one setting as the sole cause of the original failure.
 
+The following screenshots document the primary troubleshooting checkpoints:
+
+Figure 1. Review of Windows interactive logon rights.
+
+Figure 2. Successful interactive domain sign-in following troubleshooting.
+
+Supporting Evidence
+
+Additional screenshots document the account investigation and password recovery workflow:
+
+Figure 3. Active Directory account status and password expiration verification.
+
+Figure 4. Password reset and requirement to change the password at next logon.
+
+The screenshots document selected troubleshooting checkpoints. They do not independently establish one setting as the sole cause of the original authentication failure.
+</CodeBlock>
+
+This makes the evidence hierarchy clear:
+- Figures 1–2: Primary troubleshooting and outcome.
+- Figures 3–4: Supporting account and password investigation
 ### Scenario 2: Active Directory Account Lockout & Help Desk Recovery
 
 **Test User:** Alex Johnson (`alex.johnson`)
